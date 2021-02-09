@@ -6,7 +6,7 @@ class BST:
         self.head = node
 
     def add(self,head,node):
-        if self.head == None: 
+        if self.head is None: 
             self.head = node
             return
 
@@ -108,8 +108,8 @@ class BST:
             
     def minVal(self,node):
         current = node
-        while(current.left != None):
-            current = current.left
+        while(current.left_child != None):
+            current = current.left_child
         return current
 
 
