@@ -6,7 +6,10 @@ class BST:
         self.head = node
 
     def add(self,head,node):
-        
+        if self.head == None: 
+            self.head = node
+            return
+
         if head.left_child == None and node.value < head.value:
             head.left_child = node
             print("added left value:" + str(node.value))
@@ -65,6 +68,15 @@ class BST:
     def get_node(self, current, parent, number):
         p = parent
         c = current
+        if c.value == number:
+            print("Selected nodes value: " + str(c.value))
+            print("No parent node (HEAD)")
+            if c.left_child != None: print("Selected nodes left child: " + str(c.left_child.value))
+            else: print("Selected node has no left child")
+            if c.right_child != None: print("Selected nodes right child: " + str(c.right_child.value))
+            else: print("Selected node has no right child")
+            return
+
         while c.value != number:
             if number < c.value:
                 p = c
@@ -97,9 +109,51 @@ class BST:
 
 
 
-    def remove_lesser(self, head, current, node):
-        pass
-    def remove_greater(self, head, node):
+    def remove_lesser(self, number):
+        current = self.head.left_child
+        parent = self.head
+        temp = None
+        left = False
+
+        while current.value != number:
+            if number < current.value:
+                parent = current
+                current = current.left_child
+            else:
+                parent = current
+                current = current.right_child
+
+        if parent.value > current.value: left = True
+
+        # Logic to see if the node being removed has no children and removes it depending on if its the left
+        # or the right child of its parent
+        if current.left_child == None and current.right_child == None and left: 
+            parent.left_child = None
+            return
+        elif current.left_child == None and current.right_child == None and not left:
+            parent.right_child = None
+            return
+        #==================================================================================================#
+
+        # The logic depending on if the node to be removed has one child and depending on which child and
+        # what side the parent is will depend where the nodes children end up
+        if current.left_child == None and left:
+            parent.left_child = current.right_child
+            return
+        elif current.right_child == None and left:
+            parent.left_child = current.left_child
+            return
+        elif current.left_child == None and not left:
+            parent.right_child = current.right_child
+            return
+        elif current.right_child == None and not left:
+            parent.right_child = current.left_child
+            return
+        #==================================================================================================#
+        
+
+
+    def remove_greater(self, number):
         pass
 
     def remove_head(self):
@@ -122,12 +176,13 @@ class BST:
             print()
             print("Node doesnt exist in tree")
             return
-        if self.head.value == number: self.remove_head()
-        
-        node = self.get_node(self.head, None, number)
-        print(node)
-        if node[0].left_child == None and node[0].right_child and node[2] == True: node[1].left_child = None
-        if node[0].left_child == None and node[0].right_child and node[2] == False: node[1].right_child = None
+
+        if self.head.value == number: 
+            self.remove_head()
+            return
+
+        if number < self.head.value: self.remove_lesser(number)
+        else: self.remove_greater(number)
 
 
         
@@ -142,10 +197,10 @@ def do_things(command, bst):
     if command[0].lower() == "add" and len(command) == 2:
         try:
             number = int(command[1])
-            bst.add(bst.head, Node(number))
         except:
             print("'add' was used with an invalid number")
             return
+        bst.add(bst.head, Node(number))
     elif command[0].lower() == "exists" and len(command) == 2:
         try:
             number = int(command[1])
@@ -160,6 +215,12 @@ def do_things(command, bst):
             else:
                 print()
                 print(str(number) + " does not exist in tree")
+    elif command[0].lower() == "get" and len(command) == 2:
+        try:
+            number = int(command[1])
+        except:
+            print("'get' was given an invalid number")
+        bst.get_node(bst.head, None, number)
     elif command[0].lower() == "exit":
         sys.exit()
     elif command[0].lower() == "show" and len(command) == 2:
