@@ -106,85 +106,31 @@ class BST:
             else:
                 print("Selected node has no right child")
             
+    def minVal(self,node):
+        current = node
+        while(current.left != None):
+            current = current.left
+        return current
 
 
-
-    def remove_lesser(self, number):
-        current = self.head.left_child
-        parent = self.head
-        temp = None
-        left = False
-
-        while current.value != number:
-            if number < current.value:
-                parent = current
-                current = current.left_child
-            else:
-                parent = current
-                current = current.right_child
-
-        if parent.value > current.value: left = True
-
-        # Logic to see if the node being removed has no children and removes it depending on if its the left
-        # or the right child of its parent
-        if current.left_child == None and current.right_child == None and left: 
-            parent.left_child = None
-            return
-        elif current.left_child == None and current.right_child == None and not left:
-            parent.right_child = None
-            return
-        #==================================================================================================#
-
-        # The logic depending on if the node to be removed has one child and depending on which child and
-        # what side the parent is will depend where the nodes children end up
-        if current.left_child == None and left:
-            parent.left_child = current.right_child
-            return
-        elif current.right_child == None and left:
-            parent.left_child = current.left_child
-            return
-        elif current.left_child == None and not left:
-            parent.right_child = current.right_child
-            return
-        elif current.right_child == None and not left:
-            parent.right_child = current.left_child
-            return
-        #==================================================================================================#
-        
-
-
-    def remove_greater(self, number):
-        pass
-
-    def remove_head(self):
-        if self.head.left_child == None and self.head.right_child == None: self.head = None
-        elif self.head.left_child == None: self.head = self.head.right_child
-        elif self.head.right_child == None: self.head = self.head.left_child
+    def remove_main(self,head, number):
+        if head is None:return 
+        if number < head.value: head.left_child = self.remove_main(head.left_child, number)
+        elif number > head.value: head.right_child = self.remove_main(head.right_child, number)
         else:
-            curr = self.head.left_child
-            temp = curr.right_child
-            parent = None
-            while temp != None:
-                parent = temp
-                temp = temp.right_child
-            parent.right_child = self.head.right_child
-            self.head = curr
+            if head.left_child is None:
+                temp = head.right_child
+                head = None
+                return temp
+            elif head.right_child is None:
+                temp = head.left_child
+                head =  None
+                return temp
 
-    def remove_main(self, number):
-
-        if not self.exists(self.head,number):
-            print()
-            print("Node doesnt exist in tree")
-            return
-
-        if self.head.value == number: 
-            self.remove_head()
-            return
-
-        if number < self.head.value: self.remove_lesser(number)
-        else: self.remove_greater(number)
-
-
+            temp = self.minVal(head.right_child)
+            head.value = temp.value
+            head.right_child = self.remove_main(head.right_child, temp.value)
+        return head
         
         
 class Node:
@@ -239,7 +185,7 @@ def do_things(command, bst):
             print("'remove' was given an invalid number")
             return
         
-        bst.remove_main(number)
+        bst.remove_main(bst.head,number)
         
     else:
         print()
